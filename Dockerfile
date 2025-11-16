@@ -1,20 +1,21 @@
-FROM eclipse-temurin:25-jdk AS builder
+
+FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
 
-# Copiar todo el proyecto
+# Copiar proyecto completo
 COPY . .
 
-# Dar permisos de ejecución a mvnw (IMPORTANTE)
+# Dar permisos al mvnw
 RUN chmod +x mvnw
 
-# Construir el .jar
+# Construir el proyecto
 RUN ./mvnw clean package -DskipTests
 
-# Segunda etapa: imagen liviana solo para ejecutar
-FROM eclipse-temurin:25-jre
+# Etapa final con JRE
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# Copiar el jar construido
+# Copiar el .jar compilado
 COPY --from=builder /app/target/*.jar app.jar
 
 EXPOSE 8080
